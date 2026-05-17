@@ -1,3 +1,11 @@
-/* You can add global styles to this file, and also import other style files */
+@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700&display=swap');
 
 @import 'tailwindcss';
+
+@theme {
+  --font-sans: 'Baloo 2', sans-serif;
+}
+
+body {
+  font-family: var(--font-sans);
+}
