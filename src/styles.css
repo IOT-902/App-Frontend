@@ -6,6 +6,9 @@
   --font-sans: 'Baloo 2', sans-serif;
 }
 
+* {
+  box-sizing: border-box;
+}
 body {
   font-family: var(--font-sans);
 }
