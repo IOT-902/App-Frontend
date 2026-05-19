@@ -4,6 +4,7 @@ import { IChartPoint, IInfoCardOption, InfoCardTypeEnum } from '../../components
 import { LocalisationService } from '../localisation/localisation';
 import { WebsocketService } from '../websocket/websocket.service';
 import { IAppHistoryInfo, ISensorLocalisation, ISensorValue } from './models/sensor-data.model';
+import { filterByDistance } from '../../utils/filter-by-distance';
 
 @Injectable({
   providedIn: 'root',
@@ -73,7 +74,7 @@ export class SensorDataService {
     const sortedData = this._sortDataByDate(data);
     const lastLocalisation = sortedData.at(sortedData.length - 1);
     this._getLocalisationFromData(lastLocalisation?.latitude, lastLocalisation?.longitude);
-    this._localisationHistoryData.set(data.slice(-5));
+    this._localisationHistoryData.set(filterByDistance(data).slice(-5));
   }
 
   private _setTemperatureData(data: ISensorValue[]): void {
