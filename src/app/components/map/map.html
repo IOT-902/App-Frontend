@@ -1,0 +1,17 @@
+<div class="h-full w-full">
+  <google-map
+    height="100%"
+    width="100%"
+    [mapId]="mapId"
+    [center]="center()"
+    [zoom]="zoom"
+    [options]="mapOptions"
+  >
+    @for (item of displayedMarkers(); track item.time; let last = $last) {
+      <map-advanced-marker
+        [position]="getMarkerPosition(item)"
+        [options]="getMarkerOptions(last, item)"
+      />
+    }
+  </google-map>
+</div>
