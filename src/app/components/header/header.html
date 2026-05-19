@@ -1,0 +1,29 @@
+<div class="w-full p-2 mb-4 flex items-end justify-between">
+  <div>
+    <div class="flex gap-2 items-center">
+      <span class="font-semibold text-4xl"> Dashboard</span>
+      <div
+        class="px-2 rounded-xl text-sm flex"
+        [class.bg-amber-100]="data().status === 'live'"
+        [class.text-amber-400]="data().status === 'live'"
+        [class.bg-red-100]="data().status === 'off'"
+        [class.text-red-400]="data().status === 'off'"
+      >
+        {{ data().status | titlecase }}
+      </div>
+    </div>
+    <span class="text-gray-600">Overview of your IOT Sensors</span>
+  </div>
+  <div
+    class="cursor-default group h-full flex gap-2.5 items-center border border-gray-300 rounded-xl px-2 py-1 shadow-xs hover:bg-gray-50/20 transition-all duration-200 hover:border-amber-100 relative"
+  >
+    <span
+      class="material-symbols-rounded text-[18px]! text-gray-400 group-hover:text-amber-400 transition-all duration-200 [font-variation-settings:'FILL'_0,'wght'_100,'GRAD'_0,'opsz'_24]"
+    >
+      calendar_today
+    </span>
+    <span class="font-medium"
+      ><span>{{ today | date: 'MMM dd - yyyy' }}</span>
+    </span>
+  </div>
+</div>
