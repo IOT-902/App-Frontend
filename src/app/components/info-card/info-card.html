@@ -1,11 +1,19 @@
 <div
-  class="h-full border border-gray-300 rounded-xl p-5 shadow-sm hover:shadow-md flex flex-col gap-2 transition-all duration-300 hover:border-amber-100 relative"
+  class="h-full border border-gray-300 rounded-xl p-5 shadow-sm hover:shadow-md flex flex-col gap-2 transition-all duration-300 relative"
+  [class.hover:border-amber-100]="wsStatus() === 'live'"
+  [class.hover:border-red-100]="wsStatus() === 'off'"
+  [class.cursor-pointer]="isCardClickable()"
+  [class.shadow-lg!]="isActive()"
+  [class.border-amber-200!]="isActive()"
+  [class.border-2!]="isActive()"
 >
   <div
     class="absolute top-0 right-0 w-24 h-24 bg-linear-to-br from-amber-300/30 to-transparent rounded-bl-full"
+    [class.from-amber-300/30]="wsStatus() === 'live'"
+    [class.from-red-300/30]="wsStatus() === 'off'"
   ></div>
   <div class="flex justify-start items-center gap-4">
-    <app-info-card-icon>
+    <app-info-card-icon [wsSatus]="wsStatus()">
       {{ icon() }}
     </app-info-card-icon>
 
@@ -15,11 +23,24 @@
   </div>
 
   @if (hasValue()) {
-    <div class="font-bold text-2xl">
-      {{ value() }}
+    <div class="flex flex-col">
+      <span class="font-bold text-2xl">
+        {{ value() }}
+      </span>
+      @if (!isLocalisation() && differenceValueFromLast()) {
+        <div>
+          <span
+            class="text-green-500 text-sm mr-1.5"
+            [class.text-green-500]="differenceValueFromLast()?.color === 'green'"
+            [class.text-red-500]="differenceValueFromLast()?.color === 'red'"
+            >{{ differenceValueFromLast()!.text }}</span
+          >
+          <span class="text-gray-400 text-sm"> From last value</span>
+        </div>
+      }
     </div>
   } @else {
-    <app-skeleton className="mt-2 h-5 w-48"></app-skeleton>
+    <app-skeleton [wsStatus]="wsStatus()" className="mt-2 h-5 w-48"></app-skeleton>
   }
 
   <div class="mt-2">
@@ -35,7 +56,7 @@
     }
 
     @if (shouldShowChartLoader()) {
-      <app-skeleton className="h-10 w-full"></app-skeleton>
+      <app-skeleton [wsStatus]="wsStatus()" className="h-10 w-full"></app-skeleton>
     }
 
     @if (shouldShowSubValue()) {
@@ -45,7 +66,7 @@
     }
 
     @if (shouldShowSubValueLoader()) {
-      <app-skeleton className="h-10 w-full"></app-skeleton>
+      <app-skeleton [wsStatus]="wsStatus()" className="h-10 w-full"></app-skeleton>
     }
   </div>
 </div>

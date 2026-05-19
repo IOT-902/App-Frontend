@@ -1,6 +1,6 @@
 // info-card.ts
 
-import { Component, computed, input } from '@angular/core';
+import { Component, computed, input, model } from '@angular/core';
 import { UpperCasePipe } from '@angular/common';
 
 import {
@@ -17,6 +17,7 @@ import { InfoCardIcon } from '../info-card-icon/info-card-icon';
 import { IInfoCardOption } from './models/info-card-option';
 import { InfoCardTypeEnum } from './models/info-card-type';
 import { Skeleton } from '../skeleton/skeleton/skeleton';
+import { IAppWebsocketInfo } from '../../services/websocket/models/websocket.model';
 
 export type ChartOptions = {
   series: ApexAxisChartSeries;
@@ -27,6 +28,11 @@ export type ChartOptions = {
   colors: string[];
 };
 
+export type DifferenceValueOption = {
+  text: string;
+  color: 'green' | 'red';
+};
+
 @Component({
   selector: 'app-info-card',
   imports: [InfoCardIcon, Skeleton, UpperCasePipe, NgApexchartsModule],
@@ -35,6 +41,8 @@ export type ChartOptions = {
 export class InfoCard {
   protected readonly InfoCardTypeEnum = InfoCardTypeEnum;
   public data = input.required<IInfoCardOption | undefined>();
+  public isActive = model<boolean>(false);
+  public wsStatus = input<IAppWebsocketInfo['status']>('live');
   public title = computed(() => {
     const data = this.data();
     if (!data) {
@@ -90,6 +98,28 @@ export class InfoCard {
       default:
         return 'info';
     }
+  });
+
+  public isCardClickable = computed(() => {
+    return this.wsStatus() === 'live' && this.data()?.value;
+  });
+
+  public differenceValueFromLast = computed<DifferenceValueOption | undefined>(() => {
+    const data = this.data();
+    if (!data?.chartData || data.chartData.length < 2) {
+      return undefined;
+    }
+    const values = data.chartData;
+    const last = values.at(-1)!.y;
+    const previous = values.at(-2)!.y;
+    const difference = last - previous;
+    const isPositive = difference >= 0;
+    const unit = data.type === InfoCardTypeEnum.temperature ? '°C' : 'µg/m³';
+
+    return {
+      text: `${isPositive ? '+' : ''}${difference} ${unit}`,
+      color: isPositive ? 'red' : 'green',
+    };
   });
 
   public isLocalisation = computed(() => this.data()?.type === InfoCardTypeEnum.localisation);
