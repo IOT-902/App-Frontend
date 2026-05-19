@@ -1,16 +1,17 @@
-import { effect, Injectable, Signal, signal, WritableSignal } from '@angular/core';
+import { Injectable, Signal, signal, WritableSignal } from '@angular/core';
 import { ILocalisationCity } from '../localisation/models/localisation-city';
 import { IChartPoint, IInfoCardOption, InfoCardTypeEnum } from '../../components/info-card/models';
 import { LocalisationService } from '../localisation/localisation';
 import { WebsocketService } from '../websocket/websocket.service';
 import { IAppHistoryInfo, ISensorLocalisation, ISensorValue } from './models/sensor-data.model';
-import { WEBSOCKET_APP_ROOM } from '../../const/gateway.constant';
 
 @Injectable({
   providedIn: 'root',
 })
 export class SensorDataService {
   private _localisationData: WritableSignal<ILocalisationCity | undefined> = signal(undefined);
+  private _localisationHistoryData: WritableSignal<ISensorLocalisation[] | undefined> =
+    signal(undefined);
   private _temperatureData: WritableSignal<IInfoCardOption | undefined> = signal({
     type: InfoCardTypeEnum.temperature,
   });
@@ -28,11 +29,14 @@ export class SensorDataService {
     this._websocketService.listenOnInfo<IAppHistoryInfo>((data) =>
       this._updateSensorDataFromWebsocket(data),
     );
-    this._websocketService.joinChannel(WEBSOCKET_APP_ROOM);
   }
 
   public get localisationData(): Signal<ILocalisationCity | undefined> {
     return this._localisationData.asReadonly();
+  }
+
+  public get localisationHistoryData(): Signal<ISensorLocalisation[] | undefined> {
+    return this._localisationHistoryData.asReadonly();
   }
 
   public get temperatureData(): Signal<IInfoCardOption | undefined> {
@@ -69,6 +73,7 @@ export class SensorDataService {
     const sortedData = this._sortDataByDate(data);
     const lastLocalisation = sortedData.at(sortedData.length - 1);
     this._getLocalisationFromData(lastLocalisation?.latitude, lastLocalisation?.longitude);
+    this._localisationHistoryData.set(data.slice(-5));
   }
 
   private _setTemperatureData(data: ISensorValue[]): void {
