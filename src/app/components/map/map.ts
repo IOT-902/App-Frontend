@@ -59,7 +59,6 @@ export class AppMap {
     isLast: boolean,
     marker: ISensorLocalisation,
   ): google.maps.marker.AdvancedMarkerElementOptions {
-    console.log('dd:', marker);
     return {
       title: new Date(marker.time).toLocaleString('fr-FR', {
         dateStyle: 'short',
