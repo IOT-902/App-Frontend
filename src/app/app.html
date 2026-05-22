@@ -1,42 +1,55 @@
 <div class="min-h-screen h-full flex flex-col gap-1">
+  <!-- HEADER -->
   <div class="px-5 pt-4">
-    <app-header [data]="{ status: websocketStatus() }"></app-header>
+    <app-header [data]="{ status: websocketStatus() }" />
+
+    <!-- CARDS -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+      <!-- MAP CARD -->
       <app-info-card
         (click)="togglePanel('map')"
-        [isActive]="isMapOpened()"
+        [isActive]="isPanelOpen('map')()"
+        [wsStatus]="websocketStatus()"
         [data]="{
           type: InfoCardTypeEnum.localisation,
-          value: this.localisationData()?.city ?? '',
-          subValue: this.localisationData()?.principalSubdivision,
+          value: localisationData()?.city ?? '',
+          subValue: localisationData()?.principalSubdivision,
         }"
-        [wsStatus]="websocketStatus()"
-      ></app-info-card>
-      <app-info-card
-        (click)="togglePanel('temperature')"
-        [data]="temperatureData()"
-        [wsStatus]="websocketStatus()"
-        [isActive]="isTemperatureDetailOpened()"
-      ></app-info-card>
-      <app-info-card
-        (click)="togglePanel('pollutionA')"
-        [data]="pollutionAData()"
-        [wsStatus]="websocketStatus()"
-        [isActive]="isPollutionADetailOpened()"
-      ></app-info-card>
-      <app-info-card
-        (click)="togglePanel('pollutionB')"
-        [data]="pollutionBData()"
-        [wsStatus]="websocketStatus()"
-        [isActive]="isPollutionBDetailOpened()"
-      ></app-info-card>
+      />
+
+      <!-- SENSOR CARDS -->
+      @for (panel of PANELS; track panel.key) {
+        @if (panel.key !== 'map') {
+          <app-info-card
+            (click)="togglePanel(panel.key)"
+            [isActive]="isPanelOpen(panel.key)()"
+            [wsStatus]="websocketStatus()"
+            [data]="getCardData(panel.key)"
+          />
+        }
+      }
     </div>
   </div>
-  @if (isMapOpened()) {
-    <div class="px-5 mt-4 lg:m-0 flex-1 flex items-center justify-center min-h-90">
+
+  <!-- DETAIL ZONE -->
+  <div class="px-5 mt-4 lg:m-0 flex-1 flex items-center justify-center min-h-90">
+    <!-- MAP -->
+    @if (isPanelOpen('map')()) {
       <div class="w-full h-full lg:w-[80%] lg:h-[80%] rounded-2xl overflow-hidden shadow-xl">
-        <app-map [data]="localisationHistoryData()"></app-map>
+        <app-map [data]="localisationHistoryData()" />
       </div>
-    </div>
-  }
+    }
+
+    <!-- CHARTS GENERIC -->
+    @for (panel of PANELS; track panel.key) {
+      @if (panel.key !== 'map' && isPanelOpen(panel.key)()) {
+        <div class="w-[95%]">
+          <app-detailed-chart
+            [values]="getCardData(panel.key)?.chartData ?? []"
+            [title]="getCardData(panel.key)?.type"
+          />
+        </div>
+      }
+    }
+  </div>
 </div>

@@ -145,7 +145,9 @@ export class InfoCard {
       series: [
         {
           name: this.title(),
-          data: chartData,
+          data: chartData.map((i) => {
+            return { x: i.x.toLocaleString(), y: i.y };
+          }),
         },
       ],
 

@@ -116,6 +116,6 @@ export class SensorDataService {
   }
 
   private _createLastDataChart(data: ISensorValue[]): IChartPoint[] {
-    return data.slice(-5).map((i) => ({ x: new Date(i.time).toLocaleString(), y: i.value }));
+    return data.slice(-5).map((i) => ({ x: new Date(i.time), y: i.value }));
   }
 }

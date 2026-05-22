@@ -13,6 +13,6 @@ export interface IInfoCardOption {
 export type InfoCardChartType = 'area' | 'bar';
 
 export interface IChartPoint {
-  x: string;
+  x: Date;
   y: number;
 }
